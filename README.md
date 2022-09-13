@@ -12,4 +12,4 @@ A project may have prerequisites such as models that needs to be downloaded or n
 pip install -r requirements.txt
 ```
 
-To use this component library, simply copy the directory / clone the repository to your working Xircuits project directory.
+To use this component library, simply copy the directory / clone or submodule the repository to your working Xircuits project directory.
