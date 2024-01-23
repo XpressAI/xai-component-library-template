@@ -1,0 +1,41 @@
+name: Xircuits Workflow
+
+on: [push, pull_request]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set COMPONENT_LIBRARY_PATH
+      run: |
+        REPO_NAME="${GITHUB_REPOSITORY##*/}"
+        COMPONENT_LIBRARY_PATH=$(echo "xai_components/xai_${REPO_NAME}" | sed 's/-/_/g')
+        echo "COMPONENT_LIBRARY_PATH=$COMPONENT_LIBRARY_PATH" >> $GITHUB_ENV
+
+    - name: Install xircuits
+      run: pip install xircuits
+
+    - name: List xircuits
+      run: xircuits list
+
+    - name: Clone Repository
+      run: git clone https://github.com/${{ github.repository }} ${{ env.COMPONENT_LIBRARY_PATH }}
+
+    - name: Check library-config.ini
+      run: |
+        if [ ! -f ${{ env.COMPONENT_LIBRARY_PATH }}/library-config.ini ]; then
+          echo "Warning: library-config.ini not found in ${{ env.COMPONENT_LIBRARY_PATH }}"
+        fi
+
+    - name: Process .xircuits Files
+      run: |
+        cd ${{ env.COMPONENT_LIBRARY_PATH }}
+        FILES=(*.xircuits)
+        for file in "${FILES[@]}"; do
+          xircuits compile $file
+          python "${file%.*}.py"
+        done
