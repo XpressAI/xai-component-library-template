@@ -10,9 +10,9 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
     env:
-      EXCLUDED_XIRCIRCUITS: "path/to/excluded1.xircuits path/to/excluded2.xircuits"
+      EXCLUDED_XIRCUITS: "path/to/excluded1.xircuits path/to/excluded2.xircuits"
       # Uncomment the following line and specify paths to exclude additional .xircuits files
-      # EXCLUDED_XIRCIRCUITS: "path/to/excluded1.xircuits path/to/excluded2.xircuits path/to/another_excluded.xircuits"
+      # EXCLUDED_XIRCUITS: "path/to/excluded1.xircuits path/to/excluded2.xircuits path/to/another_excluded.xircuits"
 
     steps:
     - name: Checkout Repository
@@ -30,16 +30,39 @@ jobs:
     - name: List xircuits
       run: xircuits list
 
-    - name: Clone Repository
-      run: git clone https://github.com/${{ github.repository }} ${{ env.COMPONENT_LIBRARY_PATH }}
-
-    - name: Process .xircuits Files
+    - name: Clone Pull Request
       run: |
-        cd ${{ env.COMPONENT_LIBRARY_PATH }}
-        FILES=$(find . -name "*.xircuits")
-        for file in $FILES; do
-          if [[ $EXCLUDED_XIRCIRCUITS != *"$file"* ]]; then
-            xircuits compile $file
-            python "${file%.*}.py"
+        PR_BRANCH=${{ github.event.pull_request.head.ref }}
+        git clone -b $PR_BRANCH https://github.com/${{ github.repository }} ${{ env.COMPONENT_LIBRARY_PATH }}
+
+    - name: Test .xircuits Workflows
+      run: |
+          LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
+          echo "Looking for .xircuits files in xai_components/${{ env.COMPONENT_LIBRARY_PATH }}/*" | tee -a $LOG_FILE
+          FILES=$(find ${{ env.COMPONENT_LIBRARY_PATH }} -name "*.xircuits")
+          if [ -z "$FILES" ]; then
+            echo "No .xircuits files found." | tee -a $LOG_FILE
+          else
+            for file in $FILES; do
+              if [[ $EXCLUDED_XIRCUITS != *"$file"* ]]; then
+                echo "Processing $file..." | tee -a $LOG_FILE
+                xircuits compile $file "${file%.*}.py" 2>&1 | tee -a $LOG_FILE
+                # Assuming the Python file needs to be executed from the repository root
+                python "${file%.*}.py" 2>&1 | tee -a $LOG_FILE
+                if [ $? -ne 0 ]; then
+                  echo "Error: Workflow $file failed" | tee -a $LOG_FILE
+                  exit 1
+                fi
+                echo "$file processed successfully" | tee -a $LOG_FILE
+              else
+                echo "Skipping excluded file $file" | tee -a $LOG_FILE
+              fi
+            done
           fi
-        done
+          echo "Workflow processing completed" | tee -a $LOG_FILE
+
+    - name: Upload log file
+      uses: actions/upload-artifact@v3
+      with:
+        name: workflow-logs
+        path: ${{ github.workspace }}/workflow_logs.txt
