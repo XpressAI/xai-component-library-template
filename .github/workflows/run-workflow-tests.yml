@@ -37,9 +37,11 @@ jobs:
 
     - name: Test .xircuits Workflows
       run: |
+          export PYTHONPATH="${GITHUB_WORKSPACE}:${PYTHONPATH}"
           LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
-          echo "Looking for .xircuits files in xai_components/${{ env.COMPONENT_LIBRARY_PATH }}/*" | tee -a $LOG_FILE
+          echo "Looking for .xircuits files in ${{ env.COMPONENT_LIBRARY_PATH }}/*" | tee -a $LOG_FILE
           FILES=$(find ${{ env.COMPONENT_LIBRARY_PATH }} -name "*.xircuits")
+          FAIL=0
           if [ -z "$FILES" ]; then
             echo "No .xircuits files found." | tee -a $LOG_FILE
           else
@@ -47,17 +49,22 @@ jobs:
               if [[ $EXCLUDED_XIRCUITS != *"$file"* ]]; then
                 echo "Processing $file..." | tee -a $LOG_FILE
                 xircuits compile $file "${file%.*}.py" 2>&1 | tee -a $LOG_FILE
-                # Assuming the Python file needs to be executed from the repository root
                 python "${file%.*}.py" 2>&1 | tee -a $LOG_FILE
-                if [ $? -ne 0 ]; then
-                  echo "Error: Workflow $file failed" | tee -a $LOG_FILE
-                  exit 1
+                RETVAL=$?
+                if [ $RETVAL -ne 0 ]; then
+                  echo "Error: Workflow $file failed with exit code $RETVAL" | tee -a $LOG_FILE
+                  FAIL=1
+                else
+                  echo "$file processed successfully" | tee -a $LOG_FILE
                 fi
-                echo "$file processed successfully" | tee -a $LOG_FILE
               else
                 echo "Skipping excluded file $file" | tee -a $LOG_FILE
               fi
             done
+            if [ $FAIL -ne 0 ]; then
+              echo "One or more workflows failed." | tee -a $LOG_FILE
+              exit 1
+            fi
           fi
           echo "Workflow processing completed" | tee -a $LOG_FILE
 

@@ -6,7 +6,7 @@
     "gridSize": 0,
     "layers": [
         {
-            "id": "322e550a-7c33-462a-a0ea-2d4dd3cbb13f",
+            "id": "fb7e3231-19c5-4477-beb7-ba970300eeee",
             "type": "diagram-links",
             "isSvg": true,
             "transformed": true,
@@ -98,7 +98,7 @@
             }
         },
         {
-            "id": "e1858e13-655a-4a25-826f-527526bc007d",
+            "id": "145aab8b-5a9d-402e-9e3e-ad933a5795f8",
             "type": "diagram-nodes",
             "isSvg": false,
             "transformed": true,
@@ -183,7 +183,7 @@
                     "selected": false,
                     "extras": {
                         "type": "debug",
-                        "path": "xai_components/xai_comp_template/example_components.py",
+                        "path": "xai_components/xai_xircuits_component_library_template/example_components.py",
                         "description": null,
                         "lineNo": [
                             {
@@ -191,7 +191,8 @@
                                 "end_lineno": 9
                             }
                         ],
-                        "borderColor": "rgb(0,192,255)"
+                        "borderColor": "rgb(0,192,255)",
+                        "nextNode": "None"
                     },
                     "x": 353.537,
                     "y": 167.014,
