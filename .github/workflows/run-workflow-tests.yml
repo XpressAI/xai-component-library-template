@@ -1,6 +1,10 @@
 name: Xircuits Workflow
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: "*"
 
 jobs:
   build-and-run:
@@ -8,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set COMPONENT_LIBRARY_PATH
       run: |
@@ -34,8 +38,8 @@ jobs:
     - name: Process .xircuits Files
       run: |
         cd ${{ env.COMPONENT_LIBRARY_PATH }}
-        FILES=(*.xircuits)
-        for file in "${FILES[@]}"; do
+        FILES=$(find . -name "*.xircuits")
+        for file in $FILES; do
           xircuits compile $file
           python "${file%.*}.py"
         done
