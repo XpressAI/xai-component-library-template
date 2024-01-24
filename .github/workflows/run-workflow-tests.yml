@@ -60,12 +60,13 @@ jobs:
         if [ ${#TEST_FILES[@]} -eq 0 ]; then
           echo "No .xircuits files specified for testing." | tee -a $LOG_FILE
         else
+          echo "TEST_FILES: ${TEST_FILES}..."
           for file in $TEST_FILES; do
             FULL_PATH="${COMPONENT_LIBRARY_PATH}/${file}"
             echo "FILE: ${file}..."
             if [ -f "$FULL_PATH" ]; then
               WORKFLOW_LOG_FILE="${FULL_PATH%.*}_workflow_log.txt"
-              echo "Processing $FULL_PATH..." | tee -a $LOG_FILE
+              echo "Processing $FULL_PATH..."
               # xircuits compile $FULL_PATH "${FULL_PATH%.*}.py" 2>&1 | tee -a $LOG_FILE
               # python "${FULL_PATH%.*}.py" 2>&1 | tee -a $WORKFLOW_LOG_FILE
               # LAST_LINE=$(tail -n 1 "$WORKFLOW_LOG_FILE")
