@@ -183,7 +183,7 @@
                     "selected": false,
                     "extras": {
                         "type": "debug",
-                        "path": "xai_components/xai_xircuits_component_library_template/example_components.py",
+                        "path": "xai_components/xai_component_library_template/example_components.py",
                         "description": null,
                         "lineNo": [
                             {
