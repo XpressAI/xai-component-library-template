@@ -53,32 +53,21 @@ jobs:
 
     - name: Test .xircuits Workflows
       run: |
-        echo "Raw TEST_XIRCUITS:"
-        echo "$TEST_XIRCUITS"
         export PYTHONPATH="${GITHUB_WORKSPACE}:${PYTHONPATH}"
         LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
-        echo "TEST_XIRCUITS: $TEST_XIRCUITS"
-        IFS=$'\n' read -r -d '' -a TEST_FILES <<< "$TEST_XIRCUITS"
-        echo "TEST_FILES: ${TEST_FILES[@]}"
+        IFS=$'\n' read -r -a TEST_FILES <<< "$TEST_XIRCUITS"
         FAIL=0
         if [ ${#TEST_FILES[@]} -eq 0 ]; then
           echo "No .xircuits files specified for testing." | tee -a $LOG_FILE
         else
-          for file in "${TEST_FILES[@]}"; do
-            echo "Starting to process $file"
+          for file in $TEST_FILES; do
             FULL_PATH="${COMPONENT_LIBRARY_PATH}/${file}"
             if [ -f "$FULL_PATH" ]; then
               WORKFLOW_LOG_FILE="${FULL_PATH%.*}_workflow_log.txt"
               echo "Processing $FULL_PATH..." | tee -a $LOG_FILE
-              echo "Compiling Xircuits workflow: $FULL_PATH"
               xircuits compile $FULL_PATH "${FULL_PATH%.*}.py" 2>&1 | tee -a $LOG_FILE
-              echo "Finished compiling: $FULL_PATH"
-              echo "Running compiled Python script for: $FULL_PATH"
               python "${FULL_PATH%.*}.py" 2>&1 | tee -a $WORKFLOW_LOG_FILE
-              echo "Finished running script for: $FULL_PATH"
-              echo "Checking if workflow executed successfully."
               LAST_LINE=$(tail -n 1 "$WORKFLOW_LOG_FILE")
-              tail -n 5 "$WORKFLOW_LOG_FILE"
               if [[ "$LAST_LINE" != "Finished Executing" ]]; then
                 echo "Error: Workflow $FULL_PATH did not finish as expected" | tee -a $LOG_FILE
                 FAIL=1
@@ -90,15 +79,13 @@ jobs:
               echo "Specified file $FULL_PATH does not exist" | tee -a $LOG_FILE
               FAIL=1
             fi
-            echo "Finished processing $file"
           done
         fi
         if [ $FAIL -ne 0 ]; then
           echo "One or more workflows failed or did not finish as expected." | tee -a $LOG_FILE
-          echo "Exiting with failure."
           exit 1
         else 
-          echo "Workflow processing completed successfully." | tee -a $LOG_FILE
+          echo "Workflow processing completed" | tee -a $LOG_FILE
         fi
 
     - name: Upload log file
