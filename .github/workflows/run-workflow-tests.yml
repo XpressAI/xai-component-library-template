@@ -42,7 +42,13 @@ jobs:
         fi
 
     - name: Install Component Library
-      run: xircuits install ${LIBRARY_NAME}
+      run: |
+        if [ -f "${{ env.COMPONENT_LIBRARY_PATH }}/requirements.txt" ]; then
+          echo "requirements.txt found, installing dependencies..."
+          pip install -r ${{ env.COMPONENT_LIBRARY_PATH }}/requirements.txt
+        else
+          echo "requirements.txt not found."
+        fi
 
     - name: Test .xircuits Workflows
       run: |
