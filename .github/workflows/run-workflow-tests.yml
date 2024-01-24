@@ -10,8 +10,9 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
     env:
-      TEST_XIRCUITS: 'examples/example.xircuits examples/example2.xircuits'
-
+      TEST_XIRCUITS: |
+        examples/example.xircuits
+        examples/example2.xircuits
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
@@ -51,8 +52,8 @@ jobs:
       run: |
         export PYTHONPATH="${GITHUB_WORKSPACE}:${PYTHONPATH}"
         LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
-        # Convert space-separated list to an array
-        IFS=' ' read -r -a TEST_FILES <<< "$TEST_XIRCUITS"
+        # Read the multi-line string into an array, one line per element
+        IFS=$'\n' read -r -a TEST_FILES <<< "$TEST_XIRCUITS"
         FAIL=0
         if [ ${#TEST_FILES[@]} -eq 0 ]; then
           echo "No .xircuits files specified for testing." | tee -a $LOG_FILE
