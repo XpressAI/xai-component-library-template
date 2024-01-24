@@ -10,11 +10,7 @@ jobs:
   build-and-run:
     runs-on: ubuntu-latest
     env:
-      TEST_XIRCUITS: |
-        examples/example.xircuits examples/example2.xircuits
-
-        # path/to/your/workflow.xircuits
-        # Add more .xircuits files as needed, one per line
+      TEST_XIRCUITS: 'examples/example.xircuits examples/example2.xircuits'
 
     steps:
     - name: Checkout Repository
