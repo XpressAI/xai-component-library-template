@@ -53,7 +53,9 @@ jobs:
         export PYTHONPATH="${GITHUB_WORKSPACE}:${PYTHONPATH}"
         LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
         TEST_FILES=$(echo "$TEST_XIRCUITS" | tr '\n' ' ')
-        echo "Repository: $LIBRARY_NAME, Branch: $BRANCH_NAME, Testing Files:\n $TEST_FILES" > $LOG_FILE
+        echo "Repository: $LIBRARY_NAME" > $LOG_FILE
+        echo "Branch: $BRANCH_NAME" >> $LOG_FILE
+        echo -e "Testing Files:\n$TEST_FILES" >> $LOG_FILE
         IFS=' ' read -r -a FILE_ARRAY <<< "$TEST_FILES"
         FAIL=0
         if [ ${#FILE_ARRAY[@]} -eq 0 ]; then
@@ -63,7 +65,7 @@ jobs:
             FULL_PATH="${COMPONENT_LIBRARY_PATH}/${file}"
             if [ -f "$FULL_PATH" ]; then
               WORKFLOW_LOG_FILE="${FULL_PATH%.*}_workflow_log.txt"
-              echo "\n\nProcessing $FULL_PATH..." | tee -a $LOG_FILE
+              echo -e "\n\nProcessing $FULL_PATH..." | tee -a $LOG_FILE
               xircuits compile $FULL_PATH "${FULL_PATH%.*}.py" 2>&1 | tee -a $LOG_FILE
               python "${FULL_PATH%.*}.py" 2>&1 | tee -a $WORKFLOW_LOG_FILE
               LAST_LINE=$(tail -n 1 "$WORKFLOW_LOG_FILE")
