@@ -13,8 +13,6 @@ jobs:
       TEST_XIRCUITS: |
         examples/example.xircuits
         examples/example2.xircuits
-        # path/to/your/workflow.xircuits
-        # Add more .xircuits files as needed, one per line
 
     steps:
     - name: Checkout Repository
