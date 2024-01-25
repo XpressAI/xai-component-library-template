@@ -53,6 +53,7 @@ jobs:
         export PYTHONPATH="${GITHUB_WORKSPACE}:${PYTHONPATH}"
         LOG_FILE="${GITHUB_WORKSPACE}/workflow_logs.txt"
         TEST_FILES=$(echo "$TEST_XIRCUITS" | tr '\n' ' ')
+        echo "Repository: $LIBRARY_NAME, Branch: $BRANCH_NAME, Testing Files:\n $TEST_FILES" > $LOG_FILE
         IFS=' ' read -r -a FILE_ARRAY <<< "$TEST_FILES"
         FAIL=0
         if [ ${#FILE_ARRAY[@]} -eq 0 ]; then
@@ -90,5 +91,5 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.LIBRARY_NAME }}-${{ env.BRANCH_NAME }}-validation-workflow
+        name: ${{ env.LIBRARY_NAME }}-validation-workflow
         path: ${{ github.workspace }}/workflow_logs.txt
