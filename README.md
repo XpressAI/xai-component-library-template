@@ -13,3 +13,6 @@ pip install -r requirements.txt
 ```
 
 To use this component library, simply copy the directory / clone or submodule the repository to your working Xircuits project directory.
+
+## Tests
+A github action to test your workflow runs has been provided. Simply add the path of your workflow [here](.github/workflows/run-workflow-tests.yml#L13).
