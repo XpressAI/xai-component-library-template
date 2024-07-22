@@ -8,11 +8,17 @@ A project may have prerequisites such as models that needs to be downloaded or n
 
 ## Installation
 
+To use this component library, ensure you have Xircuits installed, then simply run:
+
+```
+xircuits install https://github.com/your-organization/your-repository
+```
+
+Alternatively you may manually copy the directory / clone or submodule the repository to your working Xircuits project directory then install the packages using:
+
 ```
 pip install -r requirements.txt
 ```
 
-To use this component library, simply copy the directory / clone or submodule the repository to your working Xircuits project directory.
-
 ## Tests
-A github action to test your workflow runs has been provided. Simply add the path of your workflow [here](.github/workflows/run-workflow-tests.yml#L13).
+A github action to test your workflow runs has been provided. Simply add the path of your workflows [here](.github/workflows/run-workflow-tests.yml#L11).

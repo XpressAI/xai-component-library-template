@@ -1,17 +1,14 @@
 name: Run Xircuits Workflows Test
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: "*"
+  workflow_dispatch:
 
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
     env:
       TEST_XIRCUITS: |
-        examples/example.xircuits
+        example.xircuits
 
     steps:
     - name: Checkout Repository
