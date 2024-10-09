@@ -1,6 +1,10 @@
 name: Run Xircuits Workflows Test
 
 on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: "*"
   workflow_dispatch:
 
 jobs:
@@ -33,7 +37,14 @@ jobs:
       run: xircuits list 
 
     - name: Clone Repository
-      run: git clone -b ${{ env.BRANCH_NAME }} https://github.com/${{ github.repository }} ${{ env.COMPONENT_LIBRARY_PATH }}
+      run: |
+        rm -rf ${{ env.COMPONENT_LIBRARY_PATH }}
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          REPO_URL="${{ github.event.pull_request.head.repo.clone_url }}"
+        else
+          REPO_URL="https://github.com/${{ github.repository }}"
+        fi
+        git clone -b ${{ env.BRANCH_NAME }} $REPO_URL ${{ env.COMPONENT_LIBRARY_PATH }}
 
     - name: Install Component Library
       run: |
