@@ -34,6 +34,9 @@ jobs:
     - name: Install xircuits in virtual environment
       run: pip install xircuits
 
+    - name: Init Xircuits
+      run: xircuits init      
+
     - name: Set Environment Variables
       run: |
         LIBRARY_NAME=$(echo "${GITHUB_REPOSITORY##*/}" | sed 's/-/_/g')
